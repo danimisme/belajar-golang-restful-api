@@ -28,7 +28,7 @@ func NewCategoryRepository() CategoryRepository {
 	}
 
 	func (repository *CategoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, category domain.Category) domain.Category {
-		SQL := "UPATE categories SET name = ? WHERE id = ?"
+		SQL := "UPDATE categories SET name = ? WHERE id = ?"
 		_, err := tx.ExecContext(ctx, SQL, category.Name, category.Id)
 		helper.PanicIfError(err)
 
@@ -45,6 +45,7 @@ func NewCategoryRepository() CategoryRepository {
 		SQL := "SELECT * FROM categories WHERE id = ?"
 		rows, err := tx.QueryContext(ctx, SQL, categoryId)
 		helper.PanicIfError(err)
+		defer rows.Close()
 
 		category := domain.Category{}
 		if rows.Next() {
