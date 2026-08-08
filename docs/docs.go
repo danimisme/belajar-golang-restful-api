@@ -241,13 +241,7 @@ const docTemplate = `{
         },
         "web.CategoryUpdateRequest": {
             "type": "object",
-            "required": [
-                "id"
-            ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 200,

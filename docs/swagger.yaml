@@ -18,14 +18,10 @@ definitions:
     type: object
   web.CategoryUpdateRequest:
     properties:
-      id:
-        type: integer
       name:
         maxLength: 200
         minLength: 1
         type: string
-    required:
-    - id
     type: object
   web.WebResponse:
     properties:
