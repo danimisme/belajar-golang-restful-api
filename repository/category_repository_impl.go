@@ -32,7 +32,9 @@ type CategoryRepositoryImpl struct {
 	}
 
 	func (repository *CategoryRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, category domain.Category) {
-		panic("Implement me")
+		SQL := "DELETE FROM categories WHERE id = ?"
+		_, err := tx.ExecContext(ctx, SQL, category.Id)
+		helper.PanicIfError(err)
 	}
 
 	func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, categoryId int) domain.Category {
