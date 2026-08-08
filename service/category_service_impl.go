@@ -69,3 +69,18 @@ func (categoryService *CategoryServiceImpl) FindById(ctx context.Context, catego
 
 	return helper.ToCategoryResponse(category)	
 }
+
+func (categoryService *CategoryServiceImpl) FindAll(ctx context.Context) []web.CategoryResponse {
+	tx, err := categoryService.DB.Begin()
+	helper.PanicIfError(err)
+
+	defer helper.CommitOrRollback(tx)
+
+
+	categories := categoryService.CategoryRepository.FindAll(ctx, tx)
+	var categoryResponses []web.CategoryResponse
+	for _ , category := range categories {
+		categoryResponses = append(categoryResponses, helper.ToCategoryResponse(category))
+	}
+	return categoryResponses
+}
