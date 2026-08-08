@@ -85,7 +85,7 @@ func (controller *CategoryControllerImpl) FindById(writter http.ResponseWriter, 
 	
 	findByIdResponse := controller.categoryService.FindById(request.Context(), id)
 
-		controller.categoryService.Delete(request.Context(), id)
+		controller.categoryService.FindById(request.Context(), id)
 		webResponse := web.WebResponse{
 			Code : 200,
 			Status: "OK",
@@ -95,5 +95,22 @@ func (controller *CategoryControllerImpl) FindById(writter http.ResponseWriter, 
 	writter.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writter)
 	err = encoder.Encode(webResponse)
+	helper.PanicIfError(err)
+}
+
+func (controller *CategoryControllerImpl) FindAll(writter http.ResponseWriter, request *http.Request, params httprouter.Params){
+	
+	categoryResponses := controller.categoryService.FindAll(request.Context())
+
+		controller.categoryService.FindAll(request.Context())
+		webResponse := web.WebResponse{
+			Code : 200,
+			Status: "OK",
+			Data: categoryResponses,
+		}
+
+	writter.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writter)
+	err := encoder.Encode(webResponse)
 	helper.PanicIfError(err)
 }
