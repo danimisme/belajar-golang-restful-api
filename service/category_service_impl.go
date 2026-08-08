@@ -28,3 +28,19 @@ func (categoryService *CategoryServiceImpl) Create(ctx context.Context, request 
 	
 	return helper.ToCategoryResponse(category)
 }
+
+func (categoryService *CategoryServiceImpl) Update(ctx context.Context, request web.CategoryUpdateRequest) web.CategoryResponse {
+	tx, err := categoryService.DB.Begin()
+	helper.PanicIfError(err)
+
+	defer helper.CommitOrRollback(tx)
+
+	category := domain.Category{
+		Id: request.Id,
+		Name : request.Name,
+	}
+
+	category = categoryService.CategoryRepository.Update(ctx, tx, category)
+
+	return  helper.ToCategoryResponse(category)
+}
