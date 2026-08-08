@@ -18,13 +18,17 @@ type CategoryRepositoryImpl struct {
 
 		id, err := result.LastInsertId()
 		helper.PanicIfError(err)
-		
+
 		category.Id = int(id)
 		return category
 	}
 
 	func (repository *CategoryRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, category domain.Category) domain.Category {
-		panic("Implement me")
+		SQL := "UPATE categories SET name = ? WHERE id = ?"
+		_, err := tx.ExecContext(ctx, SQL, category.Name, category.Id)
+		helper.PanicIfError(err)
+
+		return category
 	}
 
 	func (repository *CategoryRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, category domain.Category) {
