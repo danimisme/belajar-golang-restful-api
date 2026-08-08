@@ -60,3 +60,21 @@ func (controller *CategoryControllerImpl) Update(writter http.ResponseWriter, re
 	err = encoder.Encode(webResponse)
 	helper.PanicIfError(err)
 }
+
+func (controller *CategoryControllerImpl) Delete(writter http.ResponseWriter, request *http.Request, params httprouter.Params){
+	categoryId := params.ByName("categoryId")
+	id, err := strconv.Atoi(categoryId)
+	helper.PanicIfError(err)
+
+	controller.categoryService.Delete(request.Context(), id)
+		webResponse := web.WebResponse{
+		Code : 200,
+		Status: "OK",
+	}
+
+	writter.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writter)
+	err = encoder.Encode(webResponse)
+	helper.PanicIfError(err)
+}
+
