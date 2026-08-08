@@ -78,9 +78,5 @@ func (categoryService *CategoryServiceImpl) FindAll(ctx context.Context) []web.C
 
 
 	categories := categoryService.CategoryRepository.FindAll(ctx, tx)
-	var categoryResponses []web.CategoryResponse
-	for _ , category := range categories {
-		categoryResponses = append(categoryResponses, helper.ToCategoryResponse(category))
-	}
-	return categoryResponses
+	return helper.ToCategoryResponses(categories)
 }
