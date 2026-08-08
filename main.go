@@ -8,11 +8,19 @@ import (
 	"belajar-golang-restful-api/service"
 	"net/http"
 
+	_ "belajar-golang-restful-api/docs"
+
 	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title Category Restful API
+// @version 1.0
+// @description API for Category
+// @host localhost:8080
+// @BasePath /api
 func main() {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
@@ -29,6 +37,10 @@ func main() {
 	router.POST("/api/categories", categoryController.Create)
 	router.PUT("/api/categories/:categoryId", categoryController.Update)
 	router.DELETE("/api/categories/:categoryId", categoryController.Delete)
+
+	router.GET("/swagger/*any", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		httpSwagger.WrapHandler.ServeHTTP(w, r)
+	})
 
 	server := http.Server{
 		Addr: "localhost:8080",

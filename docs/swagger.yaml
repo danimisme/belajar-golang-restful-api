@@ -1,0 +1,162 @@
+basePath: /api
+definitions:
+  web.CategoryCreateRequest:
+    properties:
+      name:
+        maxLength: 200
+        minLength: 1
+        type: string
+    type: object
+  web.CategoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  web.CategoryUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - id
+    type: object
+  web.WebResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      status:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for Category
+  title: Category Restful API
+  version: "1.0"
+paths:
+  /categories:
+    get:
+      description: List all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/web.CategoryResponse'
+                  type: array
+              type: object
+      summary: Get all categories
+      tags:
+      - Categories API
+    post:
+      consumes:
+      - application/json
+      description: Create a new category
+      parameters:
+      - description: Category to create
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/web.CategoryCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/web.CategoryResponse'
+              type: object
+      summary: Create category
+      tags:
+      - Categories API
+  /categories/{categoryId}:
+    delete:
+      description: Delete a category by id
+      parameters:
+      - description: Category Id
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.WebResponse'
+      summary: Delete category
+      tags:
+      - Categories API
+    get:
+      description: Get a single category by id
+      parameters:
+      - description: Category Id
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/web.CategoryResponse'
+              type: object
+      summary: Get category by id
+      tags:
+      - Categories API
+    put:
+      consumes:
+      - application/json
+      description: Update an existing category by id
+      parameters:
+      - description: Category Id
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: Category to update
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/web.CategoryUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/web.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/web.CategoryResponse'
+              type: object
+      summary: Update category
+      tags:
+      - Categories API
+swagger: "2.0"
