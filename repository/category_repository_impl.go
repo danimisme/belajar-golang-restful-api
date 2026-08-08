@@ -5,6 +5,7 @@ import (
 	"belajar-golang-restful-api/model/domain"
 	"context"
 	"database/sql"
+	"errors"
 )
 
 type CategoryRepositoryImpl struct {
@@ -37,8 +38,19 @@ type CategoryRepositoryImpl struct {
 		helper.PanicIfError(err)
 	}
 
-	func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, categoryId int) domain.Category {
-		panic("Implement me")
+	func (repository *CategoryRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, categoryId int) (domain.Category, error) {
+		SQL := "SELECT * FROM categories WHERE id = ?"
+		rows, err := tx.QueryContext(ctx, SQL, categoryId)
+		helper.PanicIfError(err)
+
+		category := domain.Category{}
+		if rows.Next() {
+			err := rows.Scan(&category.Id, &category.Name)
+			helper.PanicIfError(err)
+			return category, nil
+		} else {
+			return category, errors.New("category not found")
+		}
 	}
 
 	func (repository *CategoryRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Category {
