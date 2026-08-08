@@ -35,10 +35,9 @@ func (categoryService *CategoryServiceImpl) Update(ctx context.Context, request 
 
 	defer helper.CommitOrRollback(tx)
 
-	category := domain.Category{
-		Id: request.Id,
-		Name : request.Name,
-	}
+	category, err := categoryService.CategoryRepository.FindById(ctx, tx, request.Id)
+  helper.PanicIfError(err)
+	category.Name = request.Name
 
 	category = categoryService.CategoryRepository.Update(ctx, tx, category)
 
