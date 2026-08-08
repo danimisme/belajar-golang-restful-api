@@ -6,6 +6,7 @@ import (
 	"belajar-golang-restful-api/helper"
 	"belajar-golang-restful-api/repository"
 	"belajar-golang-restful-api/service"
+	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
@@ -28,5 +29,13 @@ func main() {
 	router.POST("/api/categories", categoryController.Create)
 	router.PUT("/api/categories/:categoryId", categoryController.Update)
 	router.DELETE("/api/categories/:categoryId", categoryController.Delete)
+
+	server := http.Server{
+		Addr: "localhost:8080",
+		Handler: router,
+	}
+
+	err = server.ListenAndServe()
+	helper.PanicIfError(err)
 }
 
