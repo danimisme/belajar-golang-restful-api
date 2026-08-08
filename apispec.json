@@ -91,7 +91,7 @@
       "get": {
         "tags": ["Categories API"],
         "summary": "Get category by id",
-        "description": "List category by id",
+        "description": "Get category by id",
         "parameters": [
           {
             "name": "categoryId",
@@ -105,6 +105,59 @@
         "responses": {
           "200": {
             "description": "Success get category by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Category"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Categories API"],
+        "summary": "Update category",
+        "description": "Update category",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success update category",
             "content": {
               "application/json": {
                 "schema": {
