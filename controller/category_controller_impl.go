@@ -78,3 +78,22 @@ func (controller *CategoryControllerImpl) Delete(writter http.ResponseWriter, re
 	helper.PanicIfError(err)
 }
 
+func (controller *CategoryControllerImpl) FindById(writter http.ResponseWriter, request *http.Request, params httprouter.Params){
+	categoryId := params.ByName("categoryId")
+	id, err := strconv.Atoi(categoryId)
+	helper.PanicIfError(err)
+	
+	findByIdResponse := controller.categoryService.FindById(request.Context(), id)
+
+		controller.categoryService.Delete(request.Context(), id)
+		webResponse := web.WebResponse{
+			Code : 200,
+			Status: "OK",
+			Data: findByIdResponse,
+		}
+
+	writter.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writter)
+	err = encoder.Encode(webResponse)
+	helper.PanicIfError(err)
+}
