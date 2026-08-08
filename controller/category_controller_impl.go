@@ -6,6 +6,7 @@ import (
 	"belajar-golang-restful-api/service"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -29,9 +30,33 @@ func (controller *CategoryControllerImpl) Create(writter http.ResponseWriter, re
 		Data : categoryResponse,
 	}
 
-	writter.Header().Add("Content-Type", "aplication/json")
+	writter.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writter)
 	err := encoder.Encode(webResponse)
 	helper.PanicIfError(err)
 
+}
+
+func (controller *CategoryControllerImpl) Update(writter http.ResponseWriter, request *http.Request, params httprouter.Params){
+	decoder := json.NewDecoder(request.Body)
+
+	categoryUpdateRequest := web.CategoryUpdateRequest{}
+	decoder.Decode(&categoryUpdateRequest)
+
+	categoryId := params.ByName("categoryId")
+	id , err := strconv.Atoi(categoryId)
+	helper.PanicIfError(err)
+	categoryUpdateRequest.Id = id
+	categoryResponse := controller.categoryService.Update(request.Context(), categoryUpdateRequest)
+
+	webResponse := web.WebResponse{
+		Code : 200,
+		Status: "OK",
+		Data : categoryResponse,
+	}
+
+	writter.Header().Add("Content-Type", "application/json")
+	encoder := json.NewEncoder(writter)
+	err = encoder.Encode(webResponse)
+	helper.PanicIfError(err)
 }
