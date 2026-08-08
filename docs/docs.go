@@ -217,6 +217,9 @@ const docTemplate = `{
     "definitions": {
         "web.CategoryCreateRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
                     "type": "string",
