@@ -60,6 +60,7 @@ func InternalServerError(writter http.ResponseWriter, request *http.Request, err
 	webResponse := web.WebResponse{
 		Code: http.StatusInternalServerError,
 		Status: "Internal Server Error",
+		Data: err,
 	}
 
 	helper.WriteToResponseBody(writter, webResponse)
