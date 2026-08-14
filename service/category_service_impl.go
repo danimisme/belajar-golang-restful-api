@@ -44,6 +44,9 @@ func (categoryService *CategoryServiceImpl) Create(ctx context.Context, request 
 }
 
 func (categoryService *CategoryServiceImpl) Update(ctx context.Context, request web.CategoryUpdateRequest) web.CategoryResponse {
+	err := categoryService.validate.Struct(request)
+	helper.PanicIfError(err)
+
 	tx, err := categoryService.DB.Begin()
 	helper.PanicIfError(err)
 
