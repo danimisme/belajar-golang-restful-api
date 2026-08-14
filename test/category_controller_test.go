@@ -5,8 +5,10 @@ import (
 	"belajar-golang-restful-api/controller"
 	"belajar-golang-restful-api/helper"
 	"belajar-golang-restful-api/middleware"
+	"belajar-golang-restful-api/model/domain"
 	"belajar-golang-restful-api/repository"
 	"belajar-golang-restful-api/service"
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -14,6 +16,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -116,7 +119,36 @@ func TestCreateCategoryFailed(t *testing.T) {
 }
 
 func TestUpdateCategorySuccess(t *testing.T) {
+	db := SetupTestDB()
+	truncateCategory(db)
+
+	tx, _ := db.Begin()
+	categoryRepository := repository.NewCategoryRepository()
+	category := categoryRepository.Save(context.Background(), tx, domain.Category{Name: "Sport"})
+	tx.Commit()
+
+	router := setupRouter(db)
 	
+	requestBody := strings.NewReader(`{"name":"Edit Sport"}`)
+	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/api/categories/"+strconv.Itoa(category.Id), requestBody)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	body, _ := io.ReadAll(response.Body)
+
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, category.Id, int(responseBody["data"].(map[string]interface{})["id"].(float64)))
+	assert.Equal(t, "Edit Sport", responseBody["data"].(map[string]interface{})["name"])
 }
 
 func TestUpdateCategoryFailed(t *testing.T) {
