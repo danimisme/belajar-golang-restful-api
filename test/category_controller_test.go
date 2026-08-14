@@ -271,7 +271,29 @@ func TestDeleteCategorySuccess(t *testing.T) {
 }
 
 func TestDeleteCategoryFailed(t *testing.T) {
+	db := SetupTestDB()
+	truncateCategory(db)
+
+
+	router := setupRouter(db)
 	
+	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/api/categories/404", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	body, _ := io.ReadAll(response.Body)
+
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 404, int(responseBody["code"].(float64)))
+	assert.Equal(t, "Not Found", responseBody["status"])
 }
 
 func TestListCategorySuccess(t *testing.T) {
