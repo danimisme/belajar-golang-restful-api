@@ -8,7 +8,9 @@ import (
 	"belajar-golang-restful-api/repository"
 	"belajar-golang-restful-api/service"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -47,8 +49,7 @@ func SetupTestDB() *sql.DB {
 	return db
 }
 
-func setupRouter() http.Handler {
-	db := SetupTestDB()
+func setupRouter(db *sql.DB) http.Handler {
 	validate := validator.New()
 	categoryRepository := repository.NewCategoryRepository()
 	categoryService := service.NewCategoryService(categoryRepository, db, validate)
@@ -59,8 +60,14 @@ func setupRouter() http.Handler {
 	return middleware.NewAuthMiddleware(router)
 }
 
+func truncateCategory(db *sql.DB) {
+	db.Exec("TRUNCATE categories")
+}
+
 func TestCreateCategorySuccess(t *testing.T) {
-	router := setupRouter()
+	db := SetupTestDB()
+	truncateCategory(db)
+	router := setupRouter(db)
 	requestBody := strings.NewReader(`{"name":"Sport"}`)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/categories", requestBody)
 	request.Header.Set("Content-Type", "application/json")
@@ -73,11 +80,39 @@ func TestCreateCategorySuccess(t *testing.T) {
 	response := recorder.Result()
 	assert.Equal(t, 200, response.StatusCode)
 
+	body, _ := io.ReadAll(response.Body)
 
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+	assert.Equal(t, "Sport", responseBody["data"].(map[string]interface{})["name"])
 }
 
 func TestCreateCategoryFailed(t *testing.T) {
-	
+		db := SetupTestDB()
+	truncateCategory(db)
+	router := setupRouter(db)
+	requestBody := strings.NewReader(`{"name":""}`)
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/api/categories", requestBody)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 400, response.StatusCode)
+
+	body, _ := io.ReadAll(response.Body)
+
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 400, int(responseBody["code"].(float64)))
+	assert.Equal(t, "Bad Request", responseBody["status"])
 }
 
 func TestUpdateCategorySuccess(t *testing.T) {
