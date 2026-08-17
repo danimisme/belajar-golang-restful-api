@@ -2,12 +2,19 @@ package test
 
 import (
 	"belajar-golang-restful-api/simple"
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestSimpleService (t *testing.T) {
-	simpleService, err := simple.InitializeService()
-	fmt.Println(err)
-	fmt.Println(simpleService.SimpleRepository)
+func TestSimpleServiceError(t *testing.T) {
+	simpleService, err := simple.InitializeService(true)
+	assert.Nil(t, simpleService)
+	assert.NotNil(t, err)
+}
+
+func TestSimpleServiceSuccess(t *testing.T) {
+	simpleService, err := simple.InitializeService(false)
+	assert.NotNil(t, simpleService)
+	assert.Nil(t, err)
 }
