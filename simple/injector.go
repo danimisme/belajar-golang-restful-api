@@ -3,7 +3,12 @@
 
 package simple
 
-import "github.com/google/wire"
+import (
+	"io"
+	"os"
+
+	"github.com/google/wire"
+)
 
 func InitializeService(isError bool) (*SimpleService, error) {
 	wire.Build(NewSimpleRepository, NewSimpleService)
@@ -59,6 +64,13 @@ var fooValue = &Foo{}
 var barValue = &Bar{}
 
 func InitializeFooBarWithValue() *FooBar {
+	// Kita memasukkan sebuah Value ke dalam wire
 	wire.Build(wire.Value(fooValue), wire.Value(barValue), wire.Struct(new(FooBar), "*"))
+	return nil
+}
+
+func InitializeReader() io.Reader {
+	// contoh bind interface ke value
+	wire.Build(wire.InterfaceValue(new(io.Reader), os.Stdin))
 	return nil
 }
