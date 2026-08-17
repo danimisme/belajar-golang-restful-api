@@ -24,10 +24,12 @@ func InitializeDatabaseRepository() *DatabaseRepository {
 	return nil
 }
 
+// cara memakai set
 var fooSet = wire.NewSet(NewFooService, NewFooRepository)
 var barSet = wire.NewSet(NewBarService, NewBarRepository)
 
 func InitializeFooBarService() *FooBarService {
+	// wire.Build dapat menerima lebih dari 1 parameter
 	wire.Build(fooSet, barSet, NewFooBarService)
 	return nil
 }
@@ -56,6 +58,9 @@ var FooBarSet = wire.NewSet(
 )
 
 func InitializeFooBar() *FooBar {
+	// wire.Struct digunakan agar wire bisa membuat struct
+	// parameter keduanya adalah pointer dari struct yang ingin dibuat
+	// parameter ketiga adalah field yang ingin diisi
 	wire.Build(FooBarSet, wire.Struct(new(FooBar), "Foo", "Bar"))
 	return nil
 }
