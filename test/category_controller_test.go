@@ -297,7 +297,44 @@ func TestDeleteCategoryFailed(t *testing.T) {
 }
 
 func TestListCategorySuccess(t *testing.T) {
+	db := SetupTestDB()
+	truncateCategory(db)
+
+	tx, _ := db.Begin()
+	categoryRepository := repository.NewCategoryRepository()
+	category1 := categoryRepository.Save(context.Background(), tx, domain.Category{Name: "Sport"})
+	category2 := categoryRepository.Save(context.Background(), tx, domain.Category{Name: "Food"})
 	
+	tx.Commit()
+
+	router := setupRouter(db)
+	
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/categories", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-API-Key", "RAHASIA")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	body, _ := io.ReadAll(response.Body)
+
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 200, int(responseBody["code"].(float64)))
+	assert.Equal(t, "OK", responseBody["status"])
+
+	var categories = responseBody["data"].([]interface{})
+	categoryResponse1 := categories[0].(map[string]interface{})
+	categoryResponse2 := categories[1].(map[string]interface{})
+	
+	assert.Equal(t, category1.Id, int(categoryResponse1["id"].(float64)))
+	assert.Equal(t, category1.Name, categoryResponse1["name"])
+	assert.Equal(t, category2.Id, int(categoryResponse2["id"].(float64)))
+	assert.Equal(t, category2.Name, categoryResponse2["name"])
 }
 
 func TestUnauthorized(t *testing.T) {
