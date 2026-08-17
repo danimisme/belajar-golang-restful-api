@@ -338,5 +338,26 @@ func TestListCategorySuccess(t *testing.T) {
 }
 
 func TestUnauthorized(t *testing.T) {
+	db := SetupTestDB()
+	truncateCategory(db)
 
+	router := setupRouter(db)
+	
+	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/api/categories", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-API-Key", "salah")
+
+	recorder := httptest.NewRecorder()
+
+	router.ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+
+	body, _ := io.ReadAll(response.Body)
+
+	var responseBody map[string]interface{}
+	json.Unmarshal(body, &responseBody)
+
+	assert.Equal(t, 401, int(responseBody["code"].(float64)))
+	assert.Equal(t, "Unauthorized", responseBody["status"])
 }
