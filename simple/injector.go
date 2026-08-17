@@ -26,3 +26,21 @@ func InitializeFooBarService() *FooBarService {
 	wire.Build(fooSet, barSet, NewFooBarService)
 	return nil
 }
+
+//  contoh salah
+// func InitializeHelloService() *HelloService {
+// 	wire.Build(NewSayHelloImp, NewHelloService)
+// 	return nil
+// }
+
+
+var helloSet = wire.NewSet(
+	NewSayHelloImp,
+	// ini artinya: "Ketika ada kebutuhan tipe data interface SayHello, gunakan instance NewSayHelloImp untuk membuat nya"
+	wire.Bind(new(SayHello),new(*SayHelloImp)),
+)
+
+func InitializeHelloService() *HelloService {
+	wire.Build(helloSet, NewHelloService)
+	return nil
+}
