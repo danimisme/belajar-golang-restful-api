@@ -1,21 +1,22 @@
 package main
 
 import (
-	"belajar-golang-restful-api/app"
-	"belajar-golang-restful-api/controller"
 	"belajar-golang-restful-api/helper"
 	"belajar-golang-restful-api/middleware"
-	"belajar-golang-restful-api/repository"
-	"belajar-golang-restful-api/service"
 	"net/http"
 
 	_ "belajar-golang-restful-api/docs"
 
-	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
-	"github.com/julienschmidt/httprouter"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+
+func NewServer(authMiddleware *middleware.AuthMiddleware) *http.Server {
+	return &http.Server{
+		Addr: "localhost:8080",
+		Handler: authMiddleware,
+	}
+}
 
 // @title Category Restful API
 // @version 1.0
@@ -25,22 +26,8 @@ import (
 func main() {
 	err := godotenv.Load()
 	helper.PanicIfError(err)
-	db := app.NewDb()
-	validate := validator.New()
-	categoryRepository := repository.NewCategoryRepository()
-	categoryService := service.NewCategoryService(categoryRepository,db, validate)
-	categoryController := controller.NewCategoryController(categoryService)
 
-	router := app.NewRouter(categoryController)
-
-	router.GET("/swagger/*any", func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		httpSwagger.WrapHandler.ServeHTTP(w, r)
-	})
-
-	server := http.Server{
-		Addr: "localhost:8080",
-		Handler: middleware.NewAuthMiddleware(router),
-	}
+	server := InitializeServer()
 
 	err = server.ListenAndServe()
 	helper.PanicIfError(err)
